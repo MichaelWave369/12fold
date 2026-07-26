@@ -17,7 +17,50 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  validate:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare and validate site
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          page = Path('index.html')
+          content = page.read_text(encoding='utf-8')
+          content = content.replace('poster.webp', 'poster.svg')
+          content = content.replace(
+              '<a className="download" href="Parallax_Twelvefold_Earth_Compact_v0.2.docx" download>Download v0.2 ↓</a>',
+              '<a className="download" href="https://github.com/MichaelWave369/12fold/blob/main/MASTER_SPEC.md" target="_blank">Read v0.2 ↗</a>',
+          )
+          content = content.replace(
+              '<a className="button primary" href="Parallax_Twelvefold_Earth_Compact_v0.2.docx" download>Download the master specification ↓</a>',
+              '<a className="button primary" href="https://github.com/MichaelWave369/12fold/blob/main/MASTER_SPEC.md" target="_blank">Read the master specification ↗</a>',
+          )
+          page.write_text(content, encoding='utf-8')
+
+          required = [
+              'ReactDOM.createRoot',
+              'Twelvefold Earth Compact',
+              'Honored Truths',
+              'poster.svg',
+              'MASTER_SPEC.md',
+          ]
+          missing = [item for item in required if item not in content]
+          if missing:
+              raise SystemExit(f'Missing required site content: {missing}')
+          if not Path('poster.svg').exists():
+              raise SystemExit('poster.svg is missing')
+          if not Path('MASTER_SPEC.md').exists():
+              raise SystemExit('MASTER_SPEC.md is missing')
+          print('Twelvefold React site validation passed.')
+          PY
+
   deploy:
+    if: github.event_name != 'pull_request'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
