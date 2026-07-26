@@ -6,9 +6,14 @@ A public React presentation of the **Parallax Twelvefold Earth Compact v0.2** â€
 
 ## Live site
 
-Once the GitHub Pages workflow completes, the site is available at:
-
 **https://michaelwave369.github.io/12fold/**
+
+## Public artifacts
+
+- [Interactive proposal](https://michaelwave369.github.io/12fold/)
+- [Master Design Specification v0.2](./MASTER_SPEC.md)
+- [Vector infographic poster](./poster.svg)
+- [GitHub Pages deployment workflow](./.github/workflows/deploy.yml)
 
 ## Core principles
 
@@ -18,24 +23,8 @@ Once the GitHub Pages workflow completes, the site is available at:
 - Protected Dissent
 - No Throne
 
-## Local development
+## Architecture
 
-```bash
-npm install
-npm run dev
-```
-
-## Production build
-
-```bash
-npm run build
-```
-
-The GitHub Actions workflow in `.github/workflows/deploy.yml` builds and deploys the `dist` folder to GitHub Pages on every push to `main`.
-
-## Public artifacts
-
-- Full infographic poster
-- Master Design Specification v0.2 (`.docx`)
+The presentation is a lightweight browser-delivered React experience. The GitHub Actions workflow validates pull requests and deploys the public site from the authorized `main` branch.
 
 Concept Steward: **Michael Hughes**
