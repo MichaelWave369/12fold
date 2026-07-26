@@ -24,6 +24,25 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Prepare Pages build
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          page = Path('index.html')
+          content = page.read_text(encoding='utf-8')
+          content = content.replace('poster.webp', 'poster.svg')
+          content = content.replace(
+              '<a className="download" href="Parallax_Twelvefold_Earth_Compact_v0.2.docx" download>Download v0.2 ↓</a>',
+              '<a className="download" href="https://github.com/MichaelWave369/12fold/blob/main/MASTER_SPEC.md" target="_blank">Read v0.2 ↗</a>',
+          )
+          content = content.replace(
+              '<a className="button primary" href="Parallax_Twelvefold_Earth_Compact_v0.2.docx" download>Download the master specification ↓</a>',
+              '<a className="button primary" href="https://github.com/MichaelWave369/12fold/blob/main/MASTER_SPEC.md" target="_blank">Read the master specification ↗</a>',
+          )
+          page.write_text(content, encoding='utf-8')
+          PY
+
       - name: Configure Pages
         uses: actions/configure-pages@v5
         with:
