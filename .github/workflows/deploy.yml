@@ -24,6 +24,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Rebuild and verify poster
+        run: |
+          cat assets/poster-data/poster-*.txt | tr -d '\r\n' | base64 --decode > poster.webp
+          echo "1858ac6fe7c5b485a532236abb76a8aeadb31062d5143601ae9b4003fb20e7ef  poster.webp" | sha256sum --check -
+          test "$(wc -c < poster.webp)" -eq 57232
+
       - name: Prepare and validate site
         run: |
           python - <<'PY'
@@ -31,7 +37,6 @@ jobs:
 
           page = Path('index.html')
           content = page.read_text(encoding='utf-8')
-          content = content.replace('poster.webp', 'poster.svg')
           content = content.replace(
               '<a className="download" href="Parallax_Twelvefold_Earth_Compact_v0.2.docx" download>Download v0.2 ↓</a>',
               '<a className="download" href="https://github.com/MichaelWave369/12fold/blob/main/MASTER_SPEC.md" target="_blank">Read v0.2 ↗</a>',
@@ -46,17 +51,17 @@ jobs:
               'ReactDOM.createRoot',
               'Twelvefold Earth Compact',
               'Honored Truths',
-              'poster.svg',
+              'poster.webp',
               'MASTER_SPEC.md',
           ]
           missing = [item for item in required if item not in content]
           if missing:
               raise SystemExit(f'Missing required site content: {missing}')
-          if not Path('poster.svg').exists():
-              raise SystemExit('poster.svg is missing')
+          if not Path('poster.webp').exists():
+              raise SystemExit('poster.webp is missing')
           if not Path('MASTER_SPEC.md').exists():
               raise SystemExit('MASTER_SPEC.md is missing')
-          print('Twelvefold React site validation passed.')
+          print('Twelvefold React site and uploaded poster validation passed.')
           PY
 
   deploy:
@@ -69,6 +74,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Rebuild and verify uploaded poster
+        run: |
+          cat assets/poster-data/poster-*.txt | tr -d '\r\n' | base64 --decode > poster.webp
+          echo "1858ac6fe7c5b485a532236abb76a8aeadb31062d5143601ae9b4003fb20e7ef  poster.webp" | sha256sum --check -
+          test "$(wc -c < poster.webp)" -eq 57232
+
       - name: Prepare Pages build
         run: |
           python - <<'PY'
@@ -76,7 +87,6 @@ jobs:
 
           page = Path('index.html')
           content = page.read_text(encoding='utf-8')
-          content = content.replace('poster.webp', 'poster.svg')
           content = content.replace(
               '<a className="download" href="Parallax_Twelvefold_Earth_Compact_v0.2.docx" download>Download v0.2 ↓</a>',
               '<a className="download" href="https://github.com/MichaelWave369/12fold/blob/main/MASTER_SPEC.md" target="_blank">Read v0.2 ↗</a>',
